@@ -1,0 +1,235 @@
+<html>
+	<head>
+		<title>Modified Cipher</title>
+		
+		<style>
+			#content {
+				border:0px solid;
+				width:800px;
+				height:800px;
+				margin-left:auto;
+				margin-right:auto;
+				text-align:center;
+			}
+			#keyInput {
+				border:0px solid;
+				margin-top:120px;
+				margin-left:auto;
+				margin-right:auto;
+				text-align:left;
+				width:650px;
+			}
+			#plainText {
+				text-align:left:
+			}
+			#cipherText {	
+				text-align:left;
+			}
+			.cipherInput {
+				width:450px;
+			}
+			#buttons {
+				border:0px solid;
+				margin-left:auto;
+				margin-right:auto;
+				width:650px;
+				display:inline-block;
+			}
+			.encBtn{
+				float:right;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="content">
+			<div id="keyInput">
+				<label for="cipherKey" style="padding-right:3em;">Key:</label>
+				<input type="text" id="cipherKey" class="cipherInput" name="cipherKey" style="margin-top:3px;">
+				<input type="checkbox" id="chkSpc" name="chkSpc">
+				<label for="chkSpc">MixedAlpha</label>
+				</br>
+				<label for="masterAlpha" style="padding-right:1em;">Alphabet:</label>
+				<input type="text" id="masterAlpha" class="cipherInput" name="masterAlpha" style="margin-top:3px;margin-right:5px;">
+				<button type="Button" onclick="generateAlpha()">Generate</button>
+			</div>
+			</br>
+			<textarea id="plainText" rows="15" cols="80" style="resize:none"></textarea>
+			</br>
+			<textarea id="cipherText" rows="15" cols="80" style="resize:none"></textarea>
+			</br>
+			<div id="buttons">
+				<button type="Button" class="encBtn" id="btnEnc" onclick="decrypt()">Decrypt</button>
+				<button type="Button" class="encBtn" id="btnDec" onclick="encrypt()" style="margin-right:3px;">Encrypt</button>
+				<input type="checkbox" id="chkAdv" name="chkAdv" class="encBtn" style="margin-right:20px;">
+				<label for="chkAdv" class="encBtn">Advanced</label>
+			</div>
+		</div>
+		
+		<script>
+			
+			function generateAlpha() {
+				var plainAlpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+				var specAlpha = '1234567890.,?\'"!@#$% &*()_';
+				var masterAlpha = '';
+				var tmpChar = '';
+				var x = 0;
+				var y = 0;
+				
+				var chkVal = document.getElementById('chkSpc').checked;
+				
+				if (chkVal == true) {
+					while (x < 52) {
+						y = 0;
+						while (y == 0) {
+							tmpChar = plainAlpha.charAt(getRandomInt(0,26));
+							if (masterAlpha.indexOf(tmpChar) == -1) {
+								masterAlpha += tmpChar;
+								x++;
+								y = 1;
+							} else {}
+						}
+						y = 0;
+						while (y == 0) {
+							tmpChar = specAlpha.charAt(getRandomInt(0,26));
+							if (masterAlpha.indexOf(tmpChar) == -1) {
+								masterAlpha += tmpChar;
+								x++;
+								y = 1;
+							} else {}
+						}
+					}
+				} else {
+					while (x < 26) {
+						tmpChar = plainAlpha.charAt(getRandomInt(0,26));
+							if (masterAlpha.indexOf(tmpChar) == -1) {
+								masterAlpha += tmpChar;
+								x++;
+							} else {}
+					}
+				}
+				document.getElementById('masterAlpha').value = masterAlpha;
+			}
+			
+			function encrypt() {
+			
+				var en_cipherKey = document.getElementById('cipherKey').value.toUpperCase();
+				var en_alphabet = document.getElementById('masterAlpha').value.toUpperCase();
+				var en_plainText = document.getElementById('plainText').value.toUpperCase();
+				var en_cipherKeyArr = en_cipherKey.split('||');
+				var en_cipherText = '';
+				var en_cipherCharIndex = 0;
+				var en_keyLoopCount = 0;
+				var offset = 0;
+				var advVal = document.getElementById('chkAdv').checked;
+				for (x in en_cipherKeyArr) {
+					en_cipherKey = en_cipherKeyArr[x];
+					if (en_cipherText != "") {en_plainText = en_cipherText;en_cipherText = '';}
+					if (advVal == false) {
+						for (i = 0; i < en_plainText.length; i++) {
+							en_cipherCharIndex = en_alphabet.indexOf(en_plainText.charAt(i)) + en_alphabet.indexOf(en_cipherKey.charAt(en_keyLoopCount));
+							if (en_cipherCharIndex >= en_alphabet.length) {en_cipherCharIndex = en_cipherCharIndex - en_alphabet.length};
+							en_cipherText += en_alphabet.charAt(en_cipherCharIndex);
+							en_keyLoopCount++;
+							if (en_keyLoopCount == en_cipherKey.length) {en_keyLoopCount = 0};
+						}
+					} else {
+						for (i = 0; i < en_plainText.length; i++) {
+							en_cipherCharIndex = en_alphabet.indexOf(en_plainText.charAt(i)) + en_alphabet.indexOf(en_cipherKey.charAt(en_keyLoopCount)) - offset;
+							if (en_cipherCharIndex >= en_alphabet.length) {
+								en_cipherCharIndex = en_cipherCharIndex - en_alphabet.length;
+							} else if (en_cipherCharIndex < 0) {
+								en_cipherCharIndex = en_cipherCharIndex + en_alphabet.length;
+							}
+							en_cipherText += en_alphabet.charAt(en_cipherCharIndex);
+							en_keyLoopCount++;
+							offset++;
+							if (en_keyLoopCount == en_cipherKey.length) {en_keyLoopCount = 0};
+							if (offset == en_alphabet.length) {offset = 0};
+						}
+					}
+					en_keyLoopCount = 0;
+					offset = 0;
+				}
+				document.getElementById('cipherText').value = en_cipherText;
+			}
+			
+			function decrypt() {
+				var de_cipherKey = document.getElementById('cipherKey').value.toUpperCase();
+				var de_alphabet = document.getElementById('masterAlpha').value.toUpperCase();
+				var de_cipherText = document.getElementById('cipherText').value.toUpperCase();
+				var de_cipherKeyArr = de_cipherKey.split('||');
+				var de_plainText = '';
+				var de_cipherCharIndex = 0;
+				var de_keyLoopCount = 0;
+				var offset = 0;
+				var advVal = document.getElementById('chkAdv').checked;
+				for (x in de_cipherKeyArr) {
+					de_cipherKey = de_cipherKeyArr[(de_cipherKeyArr.length - 1) - x];
+					if (de_plainText != "") {de_cipherText = de_plainText;de_plainText = '';}
+					if (advVal == false) {
+						for (i = 0; i < de_cipherText.length; i++) {
+							de_cipherCharIndex = de_alphabet.indexOf(de_cipherText.charAt(i)) - de_alphabet.indexOf(de_cipherKey.charAt(de_keyLoopCount));
+							if (de_cipherCharIndex < 0) {de_cipherCharIndex = de_cipherCharIndex + de_alphabet.length};
+							de_plainText += de_alphabet.charAt(de_cipherCharIndex);
+							de_keyLoopCount++;
+							if (de_keyLoopCount == de_cipherKey.length) {de_keyLoopCount = 0};
+						}
+					} else {
+						for (i = 0; i < de_cipherText.length; i++) {
+							de_cipherCharIndex = de_alphabet.indexOf(de_cipherText.charAt(i)) - de_alphabet.indexOf(de_cipherKey.charAt(de_keyLoopCount)) + offset;
+							if (de_cipherCharIndex < 0) {
+								de_cipherCharIndex = de_cipherCharIndex + de_alphabet.length;
+							} else if (de_cipherCharIndex >= de_alphabet.length) {
+								de_cipherCharIndex = de_cipherCharIndex - de_alphabet.length;
+							}
+							de_plainText += de_alphabet.charAt(de_cipherCharIndex);
+							de_keyLoopCount++;
+							offset++;
+							if (de_keyLoopCount == de_cipherKey.length) {de_keyLoopCount = 0};
+							if (offset == de_alphabet.length) {offset = 0};
+						}
+					}
+					de_keyLoopCount = 0;
+					offset = 0;
+				}	
+				document.getElementById('plainText').value = de_plainText;
+			}
+			
+			function getRandomInt(min, max) {
+				min = Math.ceil(min);
+				max = Math.floor(max);
+				return Math.floor(Math.random() * (max - min)) + min;
+			}
+			
+		</script>
+	</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
