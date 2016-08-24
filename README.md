@@ -3,7 +3,7 @@
 Basic Usage
 
 1. declare a keyword, or several using  '||' (no quotes) as a delimeter.
-2. create an alphabet, or generate a random one by clicking 'generate', check to box for extended chars.
+2. create an alphabet, or generate a random one by clicking 'generate', check 'MixedAlpha' box for extended chars.
 3. keywords and plaintext can only contain characters in the alphabet.
 4. if you want to have a [Space], add a whitespace to the alphabet
     - Random MixedAlpha contains a whitespace, be on the lookout.
