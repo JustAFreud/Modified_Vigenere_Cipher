@@ -58,6 +58,8 @@
 			<textarea id="cipherText" rows="15" cols="80" style="resize:none"></textarea>
 			</br>
 			<div id="buttons">
+				<button type="Button" class="encBtn" id="btnClean" onclick="parse()" style="float:left;margin-right:3px">Clean Text</button>
+				<button type="Button" class="encBtn" id="btnSwp" onclick="swap()" style="float:left">Swap</button>
 				<button type="Button" class="encBtn" id="btnEnc" onclick="decrypt()">Decrypt</button>
 				<button type="Button" class="encBtn" id="btnDec" onclick="encrypt()" style="margin-right:3px;">Encrypt</button>
 				<input type="checkbox" id="chkAdv" name="chkAdv" class="encBtn" style="margin-right:20px;">
@@ -193,6 +195,45 @@
 					offset = 0;
 				}	
 				document.getElementById('plainText').value = de_plainText;
+			}
+			
+			function parse() {
+				var enc_alphabet = document.getElementById('masterAlpha').value.toUpperCase();
+				var enc_plainText = document.getElementById('plainText').value.toUpperCase();
+				var enc_key = document.getElementById('cipherKey').value.toUpperCase();
+				var returnString = '';
+				var returnKey = '';
+				var tmpKey = ''
+				for (i = 0; i < enc_plainText.length; i++) {
+					if (enc_alphabet.indexOf(enc_plainText[i]) != -1) {
+						returnString += enc_plainText[i];
+					}
+				}
+				document.getElementById('plainText').value = returnString;
+				var keyArr = enc_key.split('||');
+				for (x in keyArr) {
+					tmpKey = keyArr[x];
+					keyArr[x] = '';
+					for (i = 0; i < tmpKey.length; i++) {
+						if (enc_alphabet.indexOf(tmpKey[i]) != -1) {
+							keyArr[x] += tmpKey[i];
+						}
+					}
+				}
+				for (x in keyArr) {
+					if (x < keyArr.length - 1) {
+					returnKey += keyArr[x] + '||'
+					} else {returnKey += keyArr[x]}
+				}
+				document.getElementById('cipherKey').value = returnKey;
+			}
+			
+			function swap() {
+				var plain = document.getElementById('plainText').value
+				if (plain != '') {
+					document.getElementById('cipherText').value = plain;
+					document.getElementById('plainText').value = '';
+				}
 			}
 			
 			function getRandomInt(min, max) {
